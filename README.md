@@ -17,7 +17,7 @@ npm i && code . && npm run dev
 
 ### The Problem
 
-It was to create a custom hooks for a qr code. The project was quite straight on, I used https://webaim.org/resources/contrastchecker/ to get the colors right and then i struggled a bt with the animation. But it was a fun way to wrap up all new things you learned this far. For this week one of the goals was to use a lottieanimation and also follow accessability guidelines, so my aim was to firt make the error messages pretty straughtforward but also, since I know some people struggle with understanding how to use the qr code I desiced that my animation should be one where the usage of the qr code was explained.
+It was to create a custom hooks for a qr code. The project was quite straight on, I used https://webaim.org/resources/contrastchecker/ to get the colors right and then i struggled a bit with the animation. But it was a fun way to wrap up all new things you learned this far. For this week one of the goals was to use a lottieanimation and also follow accessability guidelines, so my aim was to firt make the error messages pretty straughtforward but also, since I know some people struggle with understanding how to use the qr code I desiced that my animation should be one where the usage of the qr code was explained.
 
 ### View it live
 

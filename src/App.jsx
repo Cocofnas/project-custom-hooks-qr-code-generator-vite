@@ -1,52 +1,51 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQRCodeGenerator } from './hooks/useQRCodeGenerator';
 import styled from 'styled-components';
 import Lottie from 'lottie-react';
 import animationData from './assets/QR.json';
 
 const AppContainer = styled.div`
-display: flex;
-flex-direction: column;
-align-items: center;
-justify-content: center;
-height: 100vh; /* 100% of the viewport height */
-text-align: center; /* Ensures that text inside the container is centered */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100vh;
+  text-align: center;
+  background-color: ${(props) => (props.isDarkMode ? '#121212' : '#ffffff')};
+  color: ${(props) => (props.isDarkMode ? '#ffffff' : '#01056F')};
 `;
 
-
 const TitleContainer = styled.div`
-  position: center; /* Set to relative to act as a reference for the absolute positioned Lottie container */
-  display: inline-block; /* Ensures the container doesn't take full width */
+  position: center;
+  display: inline-block;
 `;
 
 const StyledH1 = styled.h1`
-  color: #01056F;
   font-size: 2.5rem;
-  text-align: center;
-  position: relative; /* Needed for z-index stacking context */
-  z-index: 2; /* Ensures the text is above the Lottie animation */
+  position: relative;
+  z-index: 2;
+  color: inherit;
 `;
 
 const StyledH2 = styled.h2`
-  color: #01056F;
   font-size: 2rem;
+  color: inherit;
 `;
 
 const LottieContainer = styled.div`
-  margin-bottom: -30px; // Or however much space you want between the animation and the title
+  margin-bottom: -30px;
   width: 250px;
   height: 250px;
   border: outset;
-  border-width:1px;
- color: #01056F;
+  border-width: 1px;
+  color: inherit;
 `;
 
 const QRCodeImage = styled.img`
   display: block;
-  margin: auto; /* This will center the image horizontally */
+  margin: auto;
   margin: 20px;
 `;
-
 
 const ModalBackdrop = styled.div`
   position: fixed;
@@ -75,50 +74,45 @@ const ErrorMessage = styled.div`
 `;
 
 const StyledButton = styled.button`
-  background-color: #01056F;
-  color: white;
+  background-color: ${(props) => (props.isDarkMode ? '#ffffff' : '#01056F')};
+  color: ${(props) => (props.isDarkMode ? '#01056F' : '#ffffff')};
   padding: 10px 20px;
   text-align: center;
-  text-decoration: none;
-  display: inline-block;
   font-size: 18px;
-  font-weight: bold; /* Makes the text bold */
-  margin: 4px 2px;
-  transition-duration: 0.4s;
+  font-weight: bold;
+  margin: 8px 10px;
   cursor: pointer;
   border-radius: 30px;
+  transition-duration: 0.4s;
+`;
+
+const ToggleButton = styled(StyledButton)`
+  margin-top: 20px;
+  margin-bottom: 20px;
 `;
 
 const App = () => {
   const { url, setUrl, qrCode, showInput, generateQRCode, resetQRCode } = useQRCodeGenerator();
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [fileName, setFileName] = useState('');
-
   const [errorMessage, setErrorMessage] = useState('');
+  const [isDarkMode, setIsDarkMode] = useState(false);
 
-  const defaultOptions = {
-    loop: true,
-    autoplay: true,
-    animationData: animationData,
-    rendererSettings: {
-      preserveAspectRatio: 'xMidYMid slice'
-    }
-  };
+  useEffect(() => {
+    document.body.style.backgroundColor = isDarkMode ? '#121212' : '#ffffff';
+  }, [isDarkMode]);
 
   const handleGenerate = (e) => {
     e.preventDefault();
     const validUrlRegex = /^(https?:\/\/(www\.)?|www\.)[a-z0-9]+([\-\.]{1}[a-z0-9]+)*\.[a-z]{2,5}(:[0-9]{1,5})?(\/.*)?$/i;
 
-
-  
     if (validUrlRegex.test(url)) {
       generateQRCode(url);
-      setErrorMessage(''); // Clear any previous error messages
+      setErrorMessage(''); 
     } else {
-      setErrorMessage("Please enter a valid url starting with http, https or www.");
+      setErrorMessage('Please enter a valid url starting with http, https or www.');
     }
   };
-  
 
   const handleDownload = () => {
     if (!fileName) {
@@ -133,73 +127,82 @@ const App = () => {
     link.click();
     document.body.removeChild(link);
 
-    // Reset after downloading for a new QR code
     resetQRCode();
     setFileName('');
     setIsModalOpen(false);
   };
 
   const handleReset = () => {
-    resetQRCode(); // This will clear the current QR code and show the input again.
+    resetQRCode();
   };
 
   const closeModal = () => setIsModalOpen(false);
 
+  const toggleDarkMode = () => {
+    setIsDarkMode(!isDarkMode);
+  };
+
   return (
-    <AppContainer>
-          <LottieContainer>
-          <Lottie
-         loop
-        autoplay
-          animationData={animationData}
-       />
-</LottieContainer>
+    <AppContainer isDarkMode={isDarkMode}>
+      <LottieContainer>
+        <Lottie loop autoplay animationData={animationData} />
+      </LottieContainer>
       <TitleContainer>
         <StyledH1>QR Code Generator</StyledH1>
       </TitleContainer>
-        {showInput && (
-          <form onSubmit={handleGenerate}>
+
+      <ToggleButton onClick={toggleDarkMode} isDarkMode={isDarkMode}>
+        {isDarkMode ? 'Switch to Light Mode' : 'Switch to Dark Mode'}
+      </ToggleButton>
+
+      {showInput && (
+  <form onSubmit={handleGenerate} style={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+    <input
+      type="text"
+      value={url}
+      onChange={(e) => setUrl(e.target.value)}
+      placeholder="E.g. www.linkedin.com"
+      required
+      style={{ marginBottom: '10px', padding: '10px', width: '250px' }}  // Adjust padding and width as needed
+    />
+    <StyledButton type="submit" isDarkMode={isDarkMode}>
+      Generate QR Code
+    </StyledButton>
+    {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
+  </form>
+)}
+
+      {qrCode && (
+        <>
+          <QRCodeImage src={qrCode} alt="Generated QR Code" />
+          <div>
+            <StyledButton onClick={handleDownload} isDarkMode={isDarkMode}>
+              Download QR Code
+            </StyledButton>
+            <StyledButton onClick={handleReset} isDarkMode={isDarkMode}>
+              Reset
+            </StyledButton>
+          </div>
+        </>
+      )}
+
+      {isModalOpen && (
+        <ModalBackdrop>
+          <ModalContent>
+            <StyledH2>Enter a file name for your QR Code</StyledH2>
             <input
               type="text"
-              value={url}
-              onChange={(e) => setUrl(e.target.value)}
-              placeholder="E.g. www.linkedin.com"
-              required
+              value={fileName}
+              onChange={(e) => setFileName(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
+              placeholder="E.g. Linkedin_qrcode"
             />
-            <StyledButton type="submit">Generate QR Code</StyledButton>
-            {errorMessage && <ErrorMessage>{errorMessage}</ErrorMessage>}
-          </form>
-        )}
-
-{qrCode && (
-  <>
-    <QRCodeImage src={qrCode} alt="Generated QR Code" />
-    <div>
-      <StyledButton onClick={handleDownload}>Download QR Code</StyledButton>
-      <StyledButton onClick={handleReset}>Reset</StyledButton>
-    </div>
-  </>
-)}
-
-{isModalOpen && (
-  <ModalBackdrop>
-    <ModalContent>
-      <StyledH2>Enter a file name for your QR Code</StyledH2>
-      <input
-        type="text"
-        value={fileName}
-        onChange={(e) => setFileName(e.target.value.replace(/[^a-zA-Z0-9-_]/g, ''))}
-        placeholder="E.g. Linkedin_qrcode"
-      />
-      <StyledButton onClick={handleDownload}>Download</StyledButton>
-      <StyledButton onClick={closeModal}>Cancel</StyledButton>
-    </ModalContent>
-  </ModalBackdrop>
-)}
+            <StyledButton onClick={handleDownload}>Download</StyledButton>
+            <StyledButton onClick={closeModal}>Cancel</StyledButton>
+          </ModalContent>
+        </ModalBackdrop>
+      )}
     </AppContainer>
   );
 };
 
 export default App;
-
-

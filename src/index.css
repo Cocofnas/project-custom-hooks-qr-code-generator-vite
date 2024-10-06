@@ -1,9 +1,35 @@
-:root {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto", "Oxygen",
-    "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans", "Helvetica Neue",
-    sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
+  :root {
+    --background-color-light: #ffffff;
+    --text-color-light: #01056F;
+    
+    --background-color-dark: #121212;
+    --text-color-dark: #ffffff;
+  
+    --button-bg-light: #01056F;
+    --button-text-light: #ffffff;
+  
+    --button-bg-dark: #ffffff;
+    --button-text-dark: #01056F;
+  }
+  
+  body.light-mode {
+    background-color: var(--background-color-light);
+    color: var(--text-color-light);
+  }
+  
+  body.dark-mode {
+    background-color: var(--background-color-dark);
+    color: var(--text-color-dark);
+  }
+  
+  button {
+    background-color: var(--button-bg-light);
+    color: var(--button-text-light);
+  }
+  
+  body.dark-mode button {
+    background-color: var(--button-bg-dark);
+    color: var(--button-text-dark);
+  }
+  
